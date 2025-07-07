@@ -1,4 +1,14 @@
 import LazyScratchBlocks from './tw-lazy-scratch-blocks';
+// import 'scratch-blocks/python_compressed'
+import Blockly from 'scratch-blocks';
+import 'scratch-blocks/blockly_compressed_vertical'
+import 'scratch-blocks/blockly_compressed_horizontal'
+// import 'scratch-blocks/blocks_compressed'
+// import '../../node_modules/scratch-blocks/python_compressed'
+import 'scratch-blocks/lua_compressed'
+
+import 'scratch-blocks/python_compressed'
+
 
 /**
  * Connect scratch blocks with the vm
@@ -6,7 +16,11 @@ import LazyScratchBlocks from './tw-lazy-scratch-blocks';
  * @return {ScratchBlocks} ScratchBlocks connected with the vm
  */
 export default function (vm) {
+    // console.log(vm)
+    
     const ScratchBlocks = LazyScratchBlocks.get();
+    // console.log(ScratchBlocks)
+    // alert(JSON.stringify(ScratchBlocks.Python))
     const jsonForMenuBlock = function (name, menuOptionsFn, colors, start) {
         return {
             message0: '%1',

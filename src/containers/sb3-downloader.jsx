@@ -82,6 +82,7 @@ class SB3Downloader extends React.Component {
         }
     }
     downloadProject () {
+        console.log('1111111')
         if (!this.props.canSaveProject) {
             return;
         }
@@ -92,6 +93,7 @@ class SB3Downloader extends React.Component {
         });
     }
     async saveAsNew () {
+        console.log('222222')
         if (!this.props.canSaveProject) {
             return;
         }
@@ -102,12 +104,13 @@ class SB3Downloader extends React.Component {
                     {
                         description: 'Scratch 3 Project',
                         accept: {
-                            'application/octet-stream': '.sb3'
+                            'application/x.scratch.sb3': '.sb3'
                         }
                     }
                 ],
                 excludeAcceptAllOption: true
             });
+            console.log(handle)
             await this.saveToHandle(handle);
             this.props.onSetFileHandle(handle);
             const title = getProjectTitleFromFilename(handle.name);
@@ -119,6 +122,7 @@ class SB3Downloader extends React.Component {
         }
     }
     async saveToLastFile () {
+        console.log('333333')
         try {
             await this.saveToHandle(this.props.fileHandle);
         } catch (e) {
@@ -126,12 +130,14 @@ class SB3Downloader extends React.Component {
         }
     }
     saveToLastFileOrNew () {
+        console.log('44444')
         if (this.props.fileHandle) {
             return this.saveToLastFile();
         }
         return this.saveAsNew();
     }
     async saveToHandle (handle) {
+        console.log('555555')
         if (!this.props.canSaveProject) {
             return;
         }

@@ -130,6 +130,7 @@ class TargetPane extends React.Component {
         });
     }
     handleActivateBlocksTab () {
+        console.log('141414')
         this.props.onActivateTab(BLOCKS_TAB_INDEX);
     }
     handleNewSprite (spriteJSONString) {

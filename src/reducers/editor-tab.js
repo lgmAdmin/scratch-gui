@@ -22,6 +22,10 @@ const reducer = function (state, action) {
 };
 
 const activateTab = function (tab) {
+    console.log({
+        type: ACTIVATE_TAB,
+        activeTabIndex: tab
+    })
     return {
         type: ACTIVATE_TAB,
         activeTabIndex: tab

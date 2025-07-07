@@ -10,7 +10,6 @@ import {setFileHandle} from '../reducers/tw';
 import TWRestorePointModal from '../components/tw-restore-point-modal/restore-point-modal.jsx';
 import RestorePointAPI from '../lib/tw-restore-point-api';
 import log from '../lib/log';
-import downloadBlob from '../lib/download-blob.js';
 
 /* eslint-disable no-alert */
 
@@ -39,11 +38,6 @@ const messages = defineMessages({
         defaultMessage: 'Error loading restore point: {error}',
         description: 'Error message when a restore point could not be loaded',
         id: 'tw.restorePoints.error'
-    },
-    exportError: {
-        defaultMessage: 'Error exporting restore point: {error}',
-        description: 'Error message when a restore point could not be exported',
-        id: 'tw.restorePoints.exportError'
     }
 });
 
@@ -56,17 +50,14 @@ class TWRestorePointManager extends React.Component {
             'handleClickDelete',
             'handleClickDeleteAll',
             'handleChangeInterval',
-            'handleClickExport',
-            'handleClickLoad',
-            'isExportingRestorePoint'
+            'handleClickLoad'
         ]);
         this.state = {
             loading: true,
             totalSize: 0,
             restorePoints: [],
             error: null,
-            interval: RestorePointAPI.readInterval(),
-            exportingRestorePoints: []
+            interval: RestorePointAPI.readInterval()
         };
         this.timeout = null;
     }
@@ -155,39 +146,6 @@ class TWRestorePointManager extends React.Component {
             return false;
         }
         return true;
-    }
-
-    handleClickExport (id) {
-        if (this.isExportingRestorePoint(id)) {
-            return;
-        }
-
-        this.setState(oldState => ({
-            exportingRestorePoints: [...oldState.exportingRestorePoints, id]
-        }));
-
-        const removeFromExportingList = () => {
-            this.setState(oldState => ({
-                exportingRestorePoints: oldState.exportingRestorePoints.filter(i => i !== id)
-            }));
-        };
-
-        RestorePointAPI.exportRestorePoint(id)
-            .then(result => {
-                downloadBlob(`${result.title}.sb3`, result.blob);
-                removeFromExportingList();
-            })
-            .catch(error => {
-                log.error(error);
-                alert(this.props.intl.formatMessage(messages.exportError, {
-                    error
-                }));
-                removeFromExportingList();
-            });
-    }
-
-    isExportingRestorePoint (id) {
-        return this.state.exportingRestorePoints.includes(id);
     }
 
     handleClickLoad (id) {
@@ -313,11 +271,9 @@ class TWRestorePointManager extends React.Component {
                     onClickCreate={this.handleClickCreate}
                     onClickDelete={this.handleClickDelete}
                     onClickDeleteAll={this.handleClickDeleteAll}
-                    onClickExport={this.handleClickExport}
                     onClickLoad={this.handleClickLoad}
                     interval={this.state.interval}
                     onChangeInterval={this.handleChangeInterval}
-                    isExporting={this.isExportingRestorePoint}
                     isLoading={this.state.loading}
                     totalSize={this.state.totalSize}
                     restorePoints={this.state.restorePoints}

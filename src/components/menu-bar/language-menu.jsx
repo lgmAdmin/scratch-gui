@@ -88,16 +88,25 @@ class LanguageMenu extends React.PureComponent {
                 </div>
                 <Submenu
                     className={styles.languageSubmenu}
-                    place={this.props.isRtl ? 'left' : 'right'}
+                    place='left'
                 >
                     {
                         Object.keys(locales)
+                            .filter(locale => ['en', 'zh-cn'].includes(locale))
                             .map(locale => (
                                 <MenuItem
                                     key={locale}
                                     className={styles.languageMenuItem}
                                     // eslint-disable-next-line react/jsx-no-bind
-                                    onClick={() => this.props.onChangeLanguage(locale)}
+                                    // onClick={() => this.props.onChangeLanguage(locale)}
+                                     onClick={() => {
+                                        if (locale !== this.props.currentLocale) {
+                                            const confirmChange = window.confirm(`切换语言将会清空工作区，确定继续？`);
+                                            if (confirmChange) {
+                                                this.props.onChangeLanguage(locale);
+                                            }
+                                        }
+                                    }}
                                 >
                                     <img
                                         className={classNames(styles.check, {

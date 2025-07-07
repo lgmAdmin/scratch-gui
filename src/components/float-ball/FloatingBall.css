@@ -1,0 +1,59 @@
+.floating-ball-container {
+    position: relative;
+    /* right: 100px; */
+    /* top: 170px;
+    right: 500px; */
+    display: inline-block;
+    z-index: 10;
+  }
+  
+  .floating-ball, .floating-ball-child {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .floating-ball:hover {
+    transform: scale(1.1);
+  }
+  .child-balls-container {
+    display: flex;
+    flex-direction: column; /* 使子悬浮球垂直排列 */
+    gap: 10px; /* 子悬浮球之间的间距 */
+    position: absolute; 
+    top: 100%; /* 放在父悬浮球的下方 */
+    left: 50%; /* 水平居中 */
+    transform: translateX(-50%); /* 修正水平居中的偏移 */
+  }
+  
+  .floating-ball-child:hover {
+    transform: scale(1.1);
+  }
+  
+  .ball-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 30%;
+  }
+  
+  .ball-text {
+    margin-top: 4px;
+    font-size: 10px;
+    color: #333;
+    text-align: center;
+  }
+
+  .ball-data {
+    margin-top: 3px;
+    font-size: 10px;
+    color: #333;
+    text-align: center;
+  }

@@ -27,11 +27,15 @@ import DeletionRestorer from '../../containers/deletion-restorer.jsx';
 import TurboMode from '../../containers/turbo-mode.jsx';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
 import SettingsMenu from './settings-menu.jsx';
+import MasterController from 'scratch-gui/src/components/menu-bar/master-controller.jsx';
+
+import ConnectDevice from './connect-device.jsx'
 
 import FramerateChanger from '../../containers/tw-framerate-changer.jsx';
 import ChangeUsername from '../../containers/tw-change-username.jsx';
 import CloudVariablesToggler from '../../containers/tw-cloud-toggler.jsx';
 import TWSaveStatus from './tw-save-status.jsx';
+import ModeToggle from 'scratch-gui/src/components/menu-bar/ModeToggle.jsx';
 
 import {openTipsLibrary, openSettingsModal, openRestorePointModal} from '../../reducers/modals';
 import {setPlayer} from '../../reducers/mode';
@@ -101,11 +105,25 @@ import catLogo from './cat_logo.svg';
 import prehistoricLogo from './prehistoric-logo.svg';
 import oldtimeyLogo from './oldtimey-logo.svg';
 
+import hostpotConn from './hostpot-conn.svg'
+import hostpotDiscon from './hostpot-discon.svg'
+
+import battery0 from './battery0.svg'
+import battery1 from './battery1.svg'
+import battery2 from './battery2.svg'
+import battery3 from './battery3.svg'
+import battery4 from './battery4.svg'
+// import battery01 from './battery01.svg'
+
+import icrobotLogo from './IcreateCodeLogo.svg'
+
 import sharedMessages from '../../lib/shared-messages';
 
 import SeeInsideButton from './tw-see-inside.jsx';
 import {notScratchDesktop} from '../../lib/isScratchDesktop.js';
 import {APP_NAME} from '../../lib/brand.js';
+
+import FirmwareUpdate from 'scratch-gui/src/components/menu-bar/firmware-update.jsx';
 
 const ariaMessages = defineMessages({
     tutorials: {
@@ -219,6 +237,11 @@ class MenuBar extends React.Component {
             'handleClickSaveAsCopy',
             'handleClickPackager',
             'handleClickDesktopSettings',
+            'handleClickSerialConnect',
+            'handleClickBleConnect',
+            'handleClickDownloadCode',
+            'handleClickEspSend',
+            'handleClickSendWifi',
             'handleClickRestorePoints',
             'handleClickSeeCommunity',
             'handleClickShare',
@@ -228,9 +251,51 @@ class MenuBar extends React.Component {
             'getSaveToComputerHandler',
             'restoreOptionMessage'
         ]);
+        this.extended=null
+        this.state = {
+            isVisible: false, // 控制显示/隐藏的状态
+            elector:-1
+        };
+
+        this.channelHostPot=new BroadcastChannel('hostpot')
+        this.channelHostPot.addEventListener('message',(event)=>{
+            this.toggleVisibility(event.data)
+            if(event.data==false){
+                this.changeElector(-1)
+            }
+        })
+
+        // this.elector={
+        //     message:100
+        // }
+        this.lastReciveTime=Date.now()
+        this.reciveChannel = new BroadcastChannel('reciveChannel')
+        this.reciveChannel.addEventListener('message',(event)=>{
+            this.changeElector((event.data[4]/4)*100)
+            this.lastReciveTime=Date.now()
+           
+            // console.log(event.data)
+        })
+         
     }
-    componentDidMount () {
+
+    changeElector=(value)=>{
+        this.setState({elector:value})
+    }
+    // 切换 isVisible 的值
+    toggleVisibility = (value) => {
+        this.setState({ isVisible: value });
+    };
+    async componentDidMount () {
         document.addEventListener('keydown', this.handleKeyPress);
+        this.props.onClickFile()
+        await new Promise(resolve => setTimeout(resolve, 50));
+        this.props.onRequestCloseFile()
+        this.getSaveToComputerHandler(this.extended.saveAsNew)
+        // setInterval(()=>{
+        //     console.log(this.extended)
+        // },2000)
+        
     }
     componentWillUnmount () {
         document.removeEventListener('keydown', this.handleKeyPress);
@@ -273,6 +338,26 @@ class MenuBar extends React.Component {
     handleClickDesktopSettings () {
         this.props.onClickDesktopSettings();
         this.props.onRequestCloseSettings();
+    }
+    handleClickSerialConnect () {
+        this.props.clickSerialConnect();
+        // this.props.onRequestCloseSettings();
+    }
+    handleClickEspSend () {
+        this.props.clickEspSend();
+        // this.props.onRequestCloseSettings();
+    }
+    handleClickSendWifi () {
+        this.props.clickSendWifi();
+        // this.props.onRequestCloseSettings();
+    }
+    handleClickBleConnect () {
+        this.props.clickBleConnect();
+        // this.props.onRequestCloseSettings();
+    }
+    handleClickDownloadCode () {
+        this.props.clickDownloadCode();
+        // this.props.onRequestCloseSettings();
     }
     handleClickRestorePoints () {
         this.props.onClickRestorePoints();
@@ -337,17 +422,15 @@ class MenuBar extends React.Component {
     }
     handleKeyPress (event) {
         const modifier = bowser.mac ? event.metaKey : event.ctrlKey;
-        if (modifier) {
-            if (event.key.toLowerCase() === 's') {
-                this.props.handleSaveProject();
-                event.preventDefault();    
-            } else if (event.key.toLowerCase() === 'o') {
-                event.preventDefault();    
-                this.props.onStartSelectingFileUpload();
-            }
+        if (modifier && event.key.toLowerCase() === 's') {
+            this.props.handleSaveProject();
+            event.preventDefault();
         }
     }
+    //保存项目函数
     getSaveToComputerHandler (downloadProjectCallback) {
+        // console.log('_____________________')
+        // console.log(downloadProjectCallback)
         return () => {
             this.props.onRequestCloseFile();
             downloadProjectCallback();
@@ -543,23 +626,74 @@ class MenuBar extends React.Component {
                                 </MenuBarMenu>
                             </MenuLabel>
                         </div>}
-                        {(this.props.canChangeTheme || this.props.canChangeLanguage) && (<SettingsMenu
-                            canChangeLanguage={this.props.canChangeLanguage}
-                            canChangeTheme={this.props.canChangeTheme}
-                            isRtl={this.props.isRtl}
-                            onClickDesktopSettings={
-                                this.props.onClickDesktopSettings &&
-                                this.handleClickDesktopSettings
-                            }
-                            // eslint-disable-next-line react/jsx-no-bind
-                            onOpenCustomSettings={
-                                this.props.onClickAddonSettings &&
-                                this.props.onClickAddonSettings.bind(null, 'editor-theme3')
-                            }
-                            onRequestClose={this.props.onRequestCloseSettings}
-                            onRequestOpen={this.props.onClickSettings}
-                            settingsMenuOpen={this.props.settingsMenuOpen}
-                        />)}
+
+                        {"\u00A0"}{"\u00A0"}  
+                         <img
+                            src={icrobotLogo}
+                            draggable={false}
+                            width={120}
+                            height={30}
+                        />
+                        
+                         {(this.props.canChangeTheme || this.props.canChangeLanguage) && (
+                            <MasterController
+                            onClick={this.props.onClickMaster}
+                            value={this.props.extensionName}/>
+                         )}
+                         <div>
+                            {Date.now()-this.lastReciveTime<5000 && this.state.elector==125 && this.state.isVisible &&<img
+                                src={battery4}
+                                title={`电量：${this.state.elector}%`}
+                                draggable={false}
+                                width={20}
+                                height={20}
+                            />}
+                            {Date.now()-this.lastReciveTime<5000 && this.state.elector==100 && this.state.isVisible &&<img
+                                src={battery4}
+                                title={`电量：${this.state.elector}%`}
+                                draggable={false}
+                                width={20}
+                                height={20}
+                            />}
+                            {Date.now()-this.lastReciveTime<5000 && this.state.elector==75 && this.state.isVisible &&<img
+                                src={battery3}
+                                title={`电量：${this.state.elector}%`}
+                                draggable={false}
+                                width={20}
+                                height={20}
+                            />}
+                            {Date.now()-this.lastReciveTime<5000 && this.state.elector==50 && this.state.isVisible &&<img
+                                src={battery2}
+                                title={`电量：${this.state.elector}%`}
+                                draggable={false}
+                                width={20}
+                                height={20}
+                            />}
+                            {Date.now()-this.lastReciveTime<5000 && this.state.elector==25 && this.state.isVisible &&<img
+                                src={battery1}
+                                title={`电量：${this.state.elector}%`}
+                                draggable={false}
+                                width={20}
+                                height={20}
+                            />}
+                            {Date.now()-this.lastReciveTime<5000 && this.state.elector==0 && this.state.isVisible && <img
+                                src={battery0}
+                                title={`电量：${this.state.elector}%`}
+                                draggable={false}
+                                width={20}
+                                height={20}
+                            />}
+                            
+                         </div>
+
+                         <ConnectDevice
+                         onClick={this.props.onClickConnect}
+                         >
+
+                        
+                         </ConnectDevice>
+
+                         <FirmwareUpdate onClick={this.props.onClickFirmware}></FirmwareUpdate>
                         {(this.props.canManageFiles) && (
                             <MenuLabel
                                 open={this.props.fileMenuOpen}
@@ -596,7 +730,7 @@ class MenuBar extends React.Component {
                                     >
                                         {newProjectMessage}
                                     </MenuItem>
-                                    {this.props.onClickNewWindow && (
+                                    {/* {this.props.onClickNewWindow && (
                                         <MenuItem
                                             isRtl={this.props.isRtl}
                                             onClick={this.handleClickNewWindow}
@@ -608,7 +742,7 @@ class MenuBar extends React.Component {
                                                 id="tw.menuBar.newWindow"
                                             />
                                         </MenuItem>
-                                    )}
+                                    )} */}
                                     {(this.props.canSave || this.props.canCreateCopy || this.props.canRemix) && (
                                         <MenuSection>
                                             {this.props.canSave && (
@@ -637,8 +771,10 @@ class MenuBar extends React.Component {
                                         <SB3Downloader
                                             showSaveFilePicker={this.props.showSaveFilePicker}
                                         >
-                                            {(_className, downloadProject, extended) => (
-                                                <React.Fragment>
+                                            {(_className, downloadProject, extended) => {
+                                                this.extended=extended
+                                                return (
+                                                    <React.Fragment>
                                                     {extended.available && (
                                                         <React.Fragment>
                                                             {extended.name !== null && (
@@ -687,10 +823,11 @@ class MenuBar extends React.Component {
                                                         </MenuItem>
                                                     )}
                                                 </React.Fragment>
-                                            )}
+                                                )
+                                            }}
                                         </SB3Downloader>
                                     </MenuSection>
-                                    {this.props.onClickPackager && (
+                                    {/* {this.props.onClickPackager && (
                                         <MenuSection>
                                             <MenuItem
                                                 onClick={this.handleClickPackager}
@@ -703,8 +840,8 @@ class MenuBar extends React.Component {
                                                 />
                                             </MenuItem>
                                         </MenuSection>
-                                    )}
-                                    <MenuSection>
+                                    )} */}
+                                    {/* <MenuSection>
                                         <MenuItem onClick={this.handleClickRestorePoints}>
                                             <FormattedMessage
                                                 defaultMessage="Restore points"
@@ -712,11 +849,11 @@ class MenuBar extends React.Component {
                                                 id="tw.menuBar.restorePoints"
                                             />
                                         </MenuItem>
-                                    </MenuSection>
+                                    </MenuSection> */}
                                 </MenuBarMenu>
                             </MenuLabel>
                         )}
-                        <MenuLabel
+                        {/* <MenuLabel
                             open={this.props.editMenuOpen}
                             onOpen={this.props.onClickEdit}
                             onClose={this.props.onRequestCloseEdit}
@@ -839,7 +976,7 @@ class MenuBar extends React.Component {
                                     </MenuItem>
                                 </MenuSection>
                             </MenuBarMenu>
-                        </MenuLabel>
+                        </MenuLabel> */}
                         {this.props.isTotallyNormal && (
                             <MenuLabel
                                 open={this.props.modeMenuOpen}
@@ -884,7 +1021,7 @@ class MenuBar extends React.Component {
                             </MenuLabel>
                         )}
 
-                        {this.props.onClickAddonSettings && (
+                        {/* {this.props.onClickAddonSettings && (
                             <div
                                 className={classNames(styles.menuBarItem, styles.hoverable)}
                                 onClick={this.props.onClickAddonSettings}
@@ -903,8 +1040,8 @@ class MenuBar extends React.Component {
                                     />
                                 </span>
                             </div>
-                        )}
-                        {this.props.onClickSettingsModal && (
+                        )} */}
+                        {/* {this.props.onClickSettingsModal && (
                             <div
                                 className={classNames(styles.menuBarItem, styles.hoverable)}
                                 onClick={this.props.onClickSettingsModal}
@@ -923,7 +1060,7 @@ class MenuBar extends React.Component {
                                     />
                                 </span>
                             </div>
-                        )}
+                        )} */}
                     </div>
 
                     <Divider className={styles.divider} />
@@ -1011,14 +1148,14 @@ class MenuBar extends React.Component {
                         ) : []))}
                     </div>
                     {/* tw: add a feedback button */}
-                    <div className={styles.menuBarItem}>
+                    {/* <div className={styles.menuBarItem}>
                         <a
                             className={styles.feedbackLink}
                             href="https://scratch.mit.edu/users/GarboMuffin/#comments"
                             rel="noopener noreferrer"
                             target="_blank"
                         >
-                            {/* todo: icon */}
+                            
                             <Button className={styles.feedbackButton}>
                                 <FormattedMessage
                                     defaultMessage="{APP_NAME} Feedback"
@@ -1030,16 +1167,115 @@ class MenuBar extends React.Component {
                                 />
                             </Button>
                         </a>
-                    </div>
+                    </div> */}
+                    {/* <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {this.state.isVisible && <img
+                            src={hostpotConn}
+                            draggable={false}
+                            width={40}
+                            height={40}
+                        />}
+
+                        {!this.state.isVisible && <img
+                            src={hostpotDiscon}
+                            draggable={false}
+                            width={40}
+                            height={40}
+                        />}
+
+                        {"\u00A0"}{"\u00A0"}  
+
+
+                        {Date.now()-this.lastReciveTime<5000 && this.state.elector==125 && this.state.isVisible &&<img
+                            src={battery4}
+                            draggable={false}
+                            width={40}
+                            height={40}
+                        />}
+                        {Date.now()-this.lastReciveTime<5000 && this.state.elector==100 && this.state.isVisible &&<img
+                            src={battery4}
+                            draggable={false}
+                            width={40}
+                            height={40}
+                        />}
+                        {Date.now()-this.lastReciveTime<5000 && this.state.elector==75 && this.state.isVisible &&<img
+                            src={battery3}
+                            draggable={false}
+                            width={40}
+                            height={40}
+                        />}
+                        {Date.now()-this.lastReciveTime<5000 && this.state.elector==50 && this.state.isVisible &&<img
+                            src={battery2}
+                            draggable={false}
+                            width={40}
+                            height={40}
+                        />}
+                        {Date.now()-this.lastReciveTime<5000 && this.state.elector==25 && this.state.isVisible &&<img
+                            src={battery1}
+                            draggable={false}
+                            width={40}
+                            height={40}
+                        />}
+                        {Date.now()-this.lastReciveTime<5000 && this.state.elector==0 && this.state.isVisible && <img
+                            src={battery01}
+                            draggable={false}
+                            width={40}
+                            height={40}
+                        />}
+                        {!this.state.isVisible && <img
+                            src={battery0}
+                            draggable={false}
+                            width={40}
+                            height={40}
+                        />}
+                        
+                    </div> */}
                 </div>
 
-                <div className={styles.accountInfoGroup}>
+                {/* <div className={styles.accountInfoGroup}>
                     <TWSaveStatus
                         showSaveFilePicker={this.props.showSaveFilePicker}
                     />
-                </div>
+                </div> */}
 
-                {aboutButton}
+                <ModeToggle onChange={this.props.onModeChange} value={this.props.modeValue}/>
+                {(this.props.canChangeTheme || this.props.canChangeLanguage) && (<SettingsMenu
+                    canChangeLanguage={this.props.canChangeLanguage}
+                    canChangeTheme={this.props.canChangeTheme}
+                    // isRtl={this.props.isRtl}
+                    isRtl={true}
+                    onClickDesktopSettings={
+                        this.props.onClickDesktopSettings &&
+                        this.handleClickDesktopSettings
+                    }
+                    clickSerialConnect={
+                        this.props.clickSerialConnect &&
+                        this.handleClickSerialConnect
+                    }
+                    clickBleConnect={
+                        this.props.clickBleConnect &&
+                        this.handleClickBleConnect
+                    }
+                    clickDownloadCode={
+                        this.props.clickDownloadCode &&
+                        this.handleClickDownloadCode
+                    }
+                    clickEspSend={
+                        this.props.clickEspSend &&
+                        this.handleClickEspSend
+                    }
+                    clickSendWifi={
+                        this.props.clickSendWifi &&
+                        this.handleClickSendWifi
+                    }
+                    // eslint-disable-next-line react/jsx-no-bind
+                    onOpenCustomSettings={this.props.onClickAddonSettings.bind(null, 'editor-theme3')}
+                    onRequestClose={this.props.onRequestCloseSettings}
+                    onRequestOpen={this.props.onClickSettings}
+                    settingsMenuOpen={this.props.settingsMenuOpen}
+                />)}
+
+                {/* {aboutButton} */}
             </Box>
         );
     }
@@ -1104,7 +1340,15 @@ MenuBar.propTypes = {
     ]),
     onClickAccount: PropTypes.func,
     onClickAddonSettings: PropTypes.func,
+    onClickMaster: PropTypes.func,
+    onClickConnect: PropTypes.func,
+    onClickFirmware:PropTypes.func,
     onClickDesktopSettings: PropTypes.func,
+    clickSerialConnect: PropTypes.func,
+    clickBleConnect:PropTypes.func,
+    clickDownloadCode: PropTypes.func,
+    clickEspSend: PropTypes.func,
+    clickSendWifi: PropTypes.func,
     onClickPackager: PropTypes.func,
     onClickRestorePoints: PropTypes.func,
     onClickEdit: PropTypes.func,

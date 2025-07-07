@@ -21,6 +21,8 @@ class LibraryItem extends React.PureComponent {
             'handleBlur',
             'handleClick',
             'handleFavorite',
+            'handleTest',
+            'handleOnline',
             'handleFocus',
             'handleKeyPress',
             'handleMouseEnter',
@@ -70,6 +72,14 @@ class LibraryItem extends React.PureComponent {
     handleFavorite (e) {
         e.stopPropagation();
         this.props.onFavorite(this.props.id);
+    }
+    handleTest (e) {
+        e.stopPropagation();
+        this.props.onTest(this.props.id);
+    }
+    handleOnline (e) {
+        e.stopPropagation();
+        this.props.onOnline(this.props.id);
     }
     handleFocus (id) {
         if (!this.props.showPlayButton) {
@@ -138,9 +148,14 @@ class LibraryItem extends React.PureComponent {
     }
     render () {
         const iconMd5 = this.curIconMd5();
+        // const iconURL = iconMd5 ?
+        //     `https://cdn.assets.scratch.mit.edu/internalapi/asset/${iconMd5}/get/` :
+        //     this.props.iconRawURL;
+
         const iconURL = iconMd5 ?
-            `https://cdn.assets.scratch.mit.edu/internalapi/asset/${iconMd5}/get/` :
+            `../assets/${iconMd5}` :
             this.props.iconRawURL;
+        // const iconURL= `../assets/${iconMd5}`
         return (
             <LibraryItemComponent
                 intl={this.props.intl}
@@ -163,6 +178,8 @@ class LibraryItem extends React.PureComponent {
                 samples={this.props.samples}
                 favorite={this.props.favorite}
                 onFavorite={this.handleFavorite}
+                onTest={this.handleTest}
+                onOnline={this.handleOnline}
                 showPlayButton={this.props.showPlayButton}
                 onBlur={this.handleBlur}
                 onClick={this.handleClick}
@@ -218,6 +235,8 @@ LibraryItem.propTypes = {
     })),
     favorite: PropTypes.bool,
     onFavorite: PropTypes.func,
+    onTest: PropTypes.func,
+    onOnline: PropTypes.func,
     onMouseEnter: PropTypes.func.isRequired,
     onMouseLeave: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,

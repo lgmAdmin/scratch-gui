@@ -19,24 +19,12 @@ class FontName extends React.Component {
         ]);
         this.state = {
             focused: false,
-            rect: null,
-            localFonts: []
+            rect: null
         };
     }
 
     componentDidMount () {
         window.addEventListener('resize', this.handleResize);
-
-        // Chrome-only API
-        if (typeof queryLocalFonts === 'function') {
-            // eslint-disable-next-line no-undef
-            queryLocalFonts().then(fonts => {
-                const uniqueFamilies = [...new Set(fonts.map(i => i.family))];
-                this.setState({
-                    localFonts: uniqueFamilies
-                });
-            });
-        }
     }
 
     componentWillUnmount () {
@@ -64,12 +52,7 @@ class FontName extends React.Component {
     }
 
     handleBlur () {
-        const sanitizedName = this.props.isCustom ? (
-            this.props.fontManager.getUnusedCustomFont(this.props.name)
-        ) : (
-            this.props.fontManager.getUnusedSystemFont(this.props.name)
-        );
-        this.props.onChange(sanitizedName);
+        this.props.onChange(this.props.fontManager.getSafeName(this.props.name));
         this.setState({
             focused: false
         });
@@ -95,13 +78,13 @@ class FontName extends React.Component {
     }
 
     getFilteredOptions () {
-        if (this.props.isCustom || !this.state.focused) {
+        if (!this.state.focused || !this.props.options) {
             return [];
         }
         const name = this.props.name.toLowerCase();
-        const candidates = this.state.localFonts
+        const candidates = this.props.options
             .filter(family => family.toLowerCase().includes(name));
-        if (candidates.length === 1 && candidates[0] === this.props.name) {
+        if (candidates.length === 0 && candidates[0] === this.props.name) {
             return [];
         }
         return candidates;
@@ -113,7 +96,7 @@ class FontName extends React.Component {
             name,
             onChange,
             fontManager,
-            isCustom,
+            options,
             /* eslint-enable no-unused-vars */
             ...props
         } = this.props;
@@ -162,10 +145,9 @@ FontName.propTypes = {
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     fontManager: PropTypes.shape({
-        getUnusedSystemFont: PropTypes.func.isRequired,
-        getUnusedCustomFont: PropTypes.func.isRequired
+        getSafeName: PropTypes.func.isRequired
     }).isRequired,
-    isCustom: PropTypes.bool.isRequired
+    options: PropTypes.arrayOf(PropTypes.string.isRequired)
 };
 
 export default FontName;

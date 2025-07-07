@@ -1,0 +1,17 @@
+.textContainer {
+    font-size: 16px;
+    color: #333;
+    padding: 10px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.underline {
+    text-decoration: underline;
+}

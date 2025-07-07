@@ -1,6 +1,35 @@
 @import "../../css/colors.css";
 @import "../../css/units.css";
 
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 8px;
+    z-index: 10;
+    border-radius: 8px;
+}
+
+.removeButton {
+    background: #ff5f56;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 24px;
+    text-align: center;
+}
 .library-item {
     display: flex;
     flex-direction: column;
@@ -239,4 +268,42 @@
 .favorite-container.active,
 .library-item:hover .favorite-container {
     display: block;
+}
+.test-container{
+    z-index: 100;
+}
+.test-container.active,
+.library-item:hover .test-container {
+    display: block;
+}
+
+
+
+.updateButton {
+    background-color: gray; /* 默认颜色 */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+.onlineButton{
+    background-color: gray;
+    color:white;
+    border:none;
+    padding: 8px 12px;
+    cursor:pointer;
+}
+
+.updateButtonTrue {
+    background-color: green; /* 文件内容为 true 时的颜色 */
+}
+
+.updateButtonFalse {
+  background-color:red;
+}
+.onlineButtonTrue{
+    background-color:red;
+}
+.onlineButtonFalse{
+    background-color:gray;
 }

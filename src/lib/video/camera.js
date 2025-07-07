@@ -10,6 +10,7 @@ import getUserMedia from 'get-user-media-promise';
 const requestStack = [];
 const requestVideoStream = videoDesc => {
     let streamPromise;
+    console.log(navigator.mediaDevices)
     if (requestStack.length === 0) {
         streamPromise = getUserMedia({
             audio: false,

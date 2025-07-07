@@ -7,7 +7,7 @@ import {connect} from 'react-redux';
 import check from './check.svg';
 import dropdownCaret from './dropdown-caret.svg';
 import {MenuItem, Submenu} from '../menu/menu.jsx';
-import {ACCENT_BLUE, ACCENT_MAP, ACCENT_PURPLE, ACCENT_RED, ACCENT_RAINBOW, Theme} from '../../lib/themes/index.js';
+import {ACCENT_BLUE, ACCENT_MAP, ACCENT_PURPLE, ACCENT_RED, ACCENT_RAINBOW,ACCENT_GREEN, Theme} from '../../lib/themes/index.js';
 import {openAccentMenu, accentMenuOpen, closeSettingsMenu} from '../../reducers/menus.js';
 import {setTheme} from '../../reducers/theme.js';
 import {persistTheme} from '../../lib/themes/themePersistance.js';
@@ -16,9 +16,14 @@ import styles from './settings-menu.css';
 
 const options = defineMessages({
     [ACCENT_RED]: {
-        defaultMessage: 'Red',
+        defaultMessage: 'RED',
         description: 'Name of the red color scheme, used by TurboWarp by default.',
         id: 'tw.accent.red'
+    },
+    [ACCENT_GREEN]: {
+        defaultMessage: 'Green',
+        description: 'Name of the green color scheme, used by TurboWarp by default.',
+        id: 'tw.accent.green'
     },
     [ACCENT_PURPLE]: {
         defaultMessage: 'Purple',
@@ -41,25 +46,23 @@ const icons = {
     [ACCENT_RAINBOW]: rainbowIcon
 };
 
-const ColorIcon = props => (
-    icons[props.id] ? (
-        <img
-            className={styles.accentIconOuter}
-            src={icons[props.id]}
-            draggable={false}
-            // Image is decorative
-            alt=""
-        />
-    ) : (
-        <div
-            className={styles.accentIconOuter}
-            style={{
-                // menu-bar-background is var(...), don't want to evaluate with the current values
-                backgroundColor: ACCENT_MAP[props.id].guiColors['looks-secondary'],
-                backgroundImage: ACCENT_MAP[props.id].guiColors['menu-bar-background-image']
-            }}
-        />
-    )
+const ColorIcon = props => icons[props.id] ? (
+    <img
+        className={styles.accentIconOuter}
+        src={icons[props.id]}
+        draggable={false}
+        // Image is decorative
+        alt=""
+    />
+) : (
+    <div
+        className={styles.accentIconOuter}
+        style={{
+            // menu-bar-background is var(...), don't want to evaluate with the current values
+            backgroundColor: ACCENT_MAP[props.id].guiColors['looks-secondary'],
+            backgroundImage: ACCENT_MAP[props.id].guiColors['menu-bar-background-image'],
+        }}
+    />
 );
 
 ColorIcon.propTypes = {
@@ -114,7 +117,7 @@ const AccentThemeMenu = ({
                 draggable={false}
             />
         </div>
-        <Submenu place={isRtl ? 'left' : 'right'}>
+        <Submenu place='left'>
             {Object.keys(options).map(item => (
                 <AccentMenuItem
                     key={item}

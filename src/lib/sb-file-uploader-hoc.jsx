@@ -82,9 +82,7 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                                 {
                                     description: 'Scratch Project',
                                     accept: {
-                                        // Using application/x.scratch.sb3 as done in scratch-vm causes file pickers
-                                        // to disallow picking any items in Chrome 133 on Android.
-                                        'application/octet-stream': ['.sb', '.sb2', '.sb3']
+                                        'application/x.scratch.sb3': ['.sb', '.sb2', '.sb3']
                                     }
                                 }
                             ]
@@ -195,8 +193,12 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                 let loadingSuccess = false;
                 // tw: stop when loading new project
                 this.props.vm.quit();
+                console.log(this.fileReader.result)
+                console.log(filename)
                 this.props.vm.loadProject(this.fileReader.result)
                     .then(() => {
+                        console.log('----------')
+                        
                         if (filename) {
                             const uploadedProjectTitle = this.getProjectTitleFromFilename(filename);
                             this.props.onSetProjectTitle(uploadedProjectTitle);

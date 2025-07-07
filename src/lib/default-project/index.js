@@ -4,6 +4,7 @@ import projectData from './project-data';
 import overrideDefaultProject from '!arraybuffer-loader!./override-default-project.sb3';
 import backdrop from '!raw-loader!./cd21514d0531fdffb22204e0ec5ed84a.svg';
 import costume1 from '!raw-loader!./dango-cat.svg';
+import costume2 from '!raw-loader!./b9dceeedbff38a8770e52ede57eb6231.svg'
 /* eslint-enable import/no-unresolved */
 import {TextEncoder} from '../tw-text-encoder';
 
@@ -37,10 +38,10 @@ const defaultProject = translator => {
         dataFormat: 'SVG',
         data: encoder.encode(backdrop)
     }, {
-        id: '927d672925e7b99f7813735c484c6922',
+        id: 'b9dceeedbff38a8770e52ede57eb6231',
         assetType: 'ImageVector',
         dataFormat: 'SVG',
-        data: encoder.encode(costume1)
+        data: encoder.encode(costume2)
     }];
 };
 

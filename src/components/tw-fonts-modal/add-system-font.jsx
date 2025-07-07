@@ -17,8 +17,22 @@ class AddSystemFont extends React.Component {
         ]);
         this.state = {
             name: '',
-            fallback: FontFallback.DEFAULT
+            fallback: FontFallback.DEFAULT,
+            localFonts: null
         };
+    }
+
+    componentDidMount () {
+        // Chrome-only API
+        if (typeof queryLocalFonts === 'function') {
+            // eslint-disable-next-line no-undef
+            queryLocalFonts().then(fonts => {
+                const uniqueFamilies = [...new Set(fonts.map(i => i.family))];
+                this.setState({
+                    localFonts: uniqueFamilies
+                });
+            });
+        }
     }
 
     handleChangeName (name) {
@@ -55,7 +69,7 @@ class AddSystemFont extends React.Component {
                     onChange={this.handleChangeName}
                     fontManager={this.props.fontManager}
                     placeholder="Wingdings"
-                    isCustom={false}
+                    options={this.state.localFonts}
                 />
 
                 {this.state.name && (

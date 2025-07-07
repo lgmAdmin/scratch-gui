@@ -34,6 +34,9 @@ class VideoProvider {
          * Stores some canvas/frame data per resolution/mirror states
          */
         this._workspace = [];
+
+        this._selectedDeviceId;
+        this._preferredDeviceId;
     }
 
     static get FORMAT_IMAGE_DATA () {
@@ -194,36 +197,111 @@ class VideoProvider {
     }
 
     /**
+     * 启用指定设备的摄像头。如果不指定设备ID，则与 enableVideo 相同。
+     * @param {string|null} deviceId 指定 video input 的 deviceId，可选
+     * @returns {Promise<VideoProvider>} Promise resolves to this VideoProvider 实例
+     */
+    // enableVideoWithDevice (deviceId = null) {
+    //     this.enabled = true;
+
+    //     const constraints = {
+    //         width: {min: 480, ideal: 640},
+    //         height: {min: 360, ideal: 480}
+    //     };
+
+    //     // 添加 deviceId 约束（如果指定）
+    //     if (deviceId) {
+    //         constraints.deviceId = {exact: deviceId};
+    //     }
+
+    //     // 缓存结果，避免重复请求
+    //     this._singleSetup = requestVideoStream(constraints)
+    //         .then(stream => {
+    //             this._video = document.createElement('video');
+    //             try {
+    //                 this._video.srcObject = stream;
+    //             } catch (error) {
+    //                 this._video.src = window.URL.createObjectURL(stream);
+    //             }
+    //             this._video.play();
+    //             this._track = stream.getTracks()[0];
+    //             return this;
+    //         })
+    //         .catch(error => {
+    //             this._singleSetup = null;
+    //             this.onError(error);
+    //         });
+
+    //     return this._singleSetup;
+    // }
+
+
+    /**
      * Create a video stream.
      * @private
      * @return {Promise} When video has been received, rejected if video is not received
      */
+    // _setupVideo () {
+    //     // We cache the result of this setup so that we can only ever have a single
+    //     // video/getUserMedia request happen at a time.
+    //     if (this._singleSetup) {
+    //         return this._singleSetup;
+    //     }
+
+    //     this._singleSetup = requestVideoStream({
+    //         width: {min: 480, ideal: 640},
+    //         height: {min: 360, ideal: 480}
+    //     })
+    //         .then(stream => {
+    //             this._video = document.createElement('video');
+
+    //             // Use the new srcObject API, falling back to createObjectURL
+    //             try {
+    //                 this._video.srcObject = stream;
+    //             } catch (error) {
+    //                 this._video.src = window.URL.createObjectURL(stream);
+    //             }
+    //             // Hint to the stream that it should load. A standard way to do this
+    //             // is add the video tag to the DOM. Since this extension wants to
+    //             // hide the video tag and instead render a sample of the stream into
+    //             // the webgl rendered Scratch canvas, another hint like this one is
+    //             // needed.
+    //             this._video.play(); // Needed for Safari/Firefox, Chrome auto-plays.
+    //             this._track = stream.getTracks()[0];
+    //             return this;
+    //         })
+    //         .catch(error => {
+    //             this._singleSetup = null;
+    //             this.onError(error);
+    //         });
+
+    //     return this._singleSetup;
+    // }
+
     _setupVideo () {
-        // We cache the result of this setup so that we can only ever have a single
-        // video/getUserMedia request happen at a time.
         if (this._singleSetup) {
             return this._singleSetup;
         }
+        const constraints = {
+            width: { min: 480, ideal: 640 },
+            height: { min: 360, ideal: 480 }
+        };
 
-        this._singleSetup = requestVideoStream({
-            width: {min: 480, ideal: 640},
-            height: {min: 360, ideal: 480}
-        })
+        console.log(this._preferredDeviceId)
+        // 如果存在指定设备ID，则添加 deviceId 约束
+        if (this._preferredDeviceId) {
+            constraints.deviceId = { exact: this._preferredDeviceId };
+        }
+
+        this._singleSetup = requestVideoStream(constraints)
             .then(stream => {
                 this._video = document.createElement('video');
-
-                // Use the new srcObject API, falling back to createObjectURL
                 try {
                     this._video.srcObject = stream;
                 } catch (error) {
                     this._video.src = window.URL.createObjectURL(stream);
                 }
-                // Hint to the stream that it should load. A standard way to do this
-                // is add the video tag to the DOM. Since this extension wants to
-                // hide the video tag and instead render a sample of the stream into
-                // the webgl rendered Scratch canvas, another hint like this one is
-                // needed.
-                this._video.play(); // Needed for Safari/Firefox, Chrome auto-plays.
+                this._video.play();
                 this._track = stream.getTracks()[0];
                 return this;
             })
@@ -234,6 +312,14 @@ class VideoProvider {
 
         return this._singleSetup;
     }
+
+    enableVideoWithDevice(deviceId = null) {
+
+        // 设置设备 ID 供 _setupVideo 使用
+        this._preferredDeviceId = deviceId;
+    }
+
+
 
     get videoReady () {
         if (!this.enabled) {

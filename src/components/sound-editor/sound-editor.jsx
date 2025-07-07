@@ -361,6 +361,8 @@ const SoundEditor = props => (
                 {formatDuration(props.playhead, props.trimStart, props.trimEnd, props.duration)}
             </div>
             <div className={styles.advancedInfo}>
+                {props.sampleRate}
+                {'Hz '}
                 {props.isStereo ? (
                     <FormattedMessage
                         defaultMessage="Stereo"
@@ -403,6 +405,7 @@ SoundEditor.propTypes = {
     isStereo: PropTypes.bool.isRequired,
     duration: PropTypes.number.isRequired,
     size: PropTypes.number.isRequired,
+    sampleRate: PropTypes.number.isRequired,
     canPaste: PropTypes.bool.isRequired,
     canRedo: PropTypes.bool.isRequired,
     canUndo: PropTypes.bool.isRequired,

@@ -61,6 +61,8 @@ const detectTheme = () => {
         }
 
         const parsed = JSON.parse(local);
+        console.log(systemPreferences.accent)
+        console.log(parsed.accent)
         // Any invalid values in storage will be handled by Theme itself
         return new Theme(
             parsed.accent || systemPreferences.accent,

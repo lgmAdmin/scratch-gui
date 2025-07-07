@@ -2,7 +2,7 @@
 @import "../../css/filters.css";
 
 .modal-content {
-    max-width: 600px;
+    max-width: 550px;
     margin-top: 50px;
 }
 
@@ -96,34 +96,25 @@
     font-size: 2em;
 }
 
-.restore-point-buttons {
-    margin-left: auto;
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-}
-
-.restore-point-button {
+.delete-button {
     appearance: none;
     background: none;
     border: none;
     border-radius: 100%;
     width: 2rem;
     height: 2rem;
+    margin-left: auto;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.restore-point-button[disabled] {
-    opacity: 0.5;
-}
-.restore-point-button img {
+.delete-button img {
     display: block;
     width: 75%;
     height: 75%;
     filter: $filter-icon-gray;
 }
-.restore-point-button:not([disabled]):hover {
+.delete-button:hover {
     background-color: $ui-black-transparent;
 }
 

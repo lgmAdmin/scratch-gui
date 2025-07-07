@@ -1,4 +1,49 @@
 [
+
+    {
+        "name": "ICrobot",
+        "tags": [
+            "people",
+            "animals"
+        ],
+        "isStage": false,
+        "variables": {},
+        "costumes": [
+            {
+                "assetId": "b9dceeedbff38a8770e52ede57eb6231",
+                "name": "ICrobot",
+                "bitmapResolution": 1,
+                "md5ext": "b9dceeedbff38a8770e52ede57eb6231.svg",
+                "dataFormat": "svg",
+                "rotationCenterX": 72,
+                "rotationCenterY": 101
+            }
+        ],
+        "sounds": [],
+        "blocks": {}
+    },
+
+    {
+        "name": "small cat",
+        "tags": [
+            "animals"
+        ],
+        "isStage": false,
+        "variables": {},
+        "costumes": [
+            {
+                "assetId": "d539edf0e1f22fc6a1c4fe0bb583d8be",
+                "name": "small cat",
+                "bitmapResolution": 1,
+                "md5ext": "d539edf0e1f22fc6a1c4fe0bb583d8be.svg",
+                "dataFormat": "svg",
+                "rotationCenterX": 44,
+                "rotationCenterY": 44
+            }
+        ],
+        "sounds": [],
+        "blocks": {}
+    },
     {
         "name": "Abby",
         "tags": [
@@ -2023,41 +2068,6 @@
                 "rate": 22050,
                 "sampleCount": 343409,
                 "md5ext": "8bcea76415eaf98ec1cbc3825845b934.wav"
-            }
-        ],
-        "blocks": {}
-    },
-    {
-        "name": "Cat 2",
-        "tags": [
-            "cat",
-            "kitty",
-            "kitten",
-            "animals",
-            "mammal"
-        ],
-        "isStage": false,
-        "variables": {},
-        "costumes": [
-            {
-                "assetId": "7499cf6ec438d0c7af6f896bc6adc294",
-                "name": "cat 2",
-                "bitmapResolution": 1,
-                "md5ext": "7499cf6ec438d0c7af6f896bc6adc294.svg",
-                "dataFormat": "svg",
-                "rotationCenterX": 87,
-                "rotationCenterY": 39
-            }
-        ],
-        "sounds": [
-            {
-                "assetId": "cf51a0c4088942d95bcc20af13202710",
-                "name": "meow2",
-                "dataFormat": "wav",
-                "format": "",
-                "rate": 44100,
-                "sampleCount": 26048,
-                "md5ext": "cf51a0c4088942d95bcc20af13202710.wav"
             }
         ],
         "blocks": {}
